@@ -1,6 +1,6 @@
 import requests
 
-FILE_NAME = '/home/nick/code/aivoov/act2.txt'
+FILE_NAME = '/home/nick/code/aivoov/simon_2.txt'
 PEOPLE_TO_VOICE_MAP = {
           'mercy (inner)': 'f2bc131c-436b-4581-97d0-28fb9e6e35e2', 
           'mercy': 'f2bc131c-436b-4581-97d0-28fb9e6e35e2', 
@@ -14,11 +14,13 @@ PEOPLE_TO_VOICE_MAP = {
           'george': 'd7c2b60e-185b-4447-902f-2283c4afa876',
           'peter': 'd7c2b60e-185b-4447-902f-2283c4afa876',
           'james': 'd7c2b60e-185b-4447-902f-2283c4afa876',
-          'simon': 'd7c2b60e-185b-4447-902f-2283c4afa876'
+          'simon': 'd7c2b60e-185b-4447-902f-2283c4afa876',
+          'simon (inner)': 'd7c2b60e-185b-4447-902f-2283c4afa876'
         }
-PROJECT_ID = 'a12dbe3b-a24c-422d-a7ef-298fa56a92cb'
+PROJECT_ID = '3efd4607-c137-4920-93f4-0bec86dfeabb'
 #Mercy act 1 8451fe01-9d06-4b96-aca2-22e6778ad90d
 #Mercy act 2 a12dbe3b-a24c-422d-a7ef-298fa56a92cb
+#Simon act 2 3efd4607-c137-4920-93f4-0bec86dfeabb
 USERNAME = ''
 PASSWORD = ''
 
@@ -48,6 +50,8 @@ class Act:
                 choice_text = raw_line.strip().split('*[')[1].split(']')[0].strip()
                 current_scene.lines.append(Line(person=current_speaker, text=choice_text))
             elif '->' in raw_line.strip():
+                pass
+            elif raw_line.strip().startswith('VAR'):
                 pass
             elif raw_line.strip().startswith('['):
                 pass
@@ -160,6 +164,8 @@ def generate_ink_file(raw_text):
                     print(f"Error space in scene name {current_scene.name}")
             elif raw_line.strip().startswith('*['):
                 f.write(raw_line.strip() + '\n')
+            elif raw_line.strip().startswith('VAR'):
+                f.write(raw_line.strip() + '\n')
             elif '->' in raw_line.strip():
                 f.write(raw_line.strip() + '\n')
             elif raw_line.strip().startswith('['):
@@ -190,10 +196,10 @@ def main():
         act = parse_text_file(f.read())
     with open(FILE_NAME, mode='r') as f:
         generate_ink_file(f.read())
-    #login(USERNAME, PASSWORD)
+    login(USERNAME, PASSWORD)
     for scene in act.scenes:
         print(f"uploading scene {scene.name}")
-        #create_audio_file(scene)
+        create_audio_file(scene)
 
 
 if __name__ == '__main__':
