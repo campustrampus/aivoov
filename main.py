@@ -1,21 +1,27 @@
 import requests
 
 FILE_NAME = '/home/nick/code/aivoov/simon_2.txt'
+MALE_VOICE = 'd7c2b60e-185b-4447-902f-2283c4afa876' 
+FEMALE_VOICE = 'f2bc131c-436b-4581-97d0-28fb9e6e35e2'
 PEOPLE_TO_VOICE_MAP = {
-          'mercy (inner)': 'f2bc131c-436b-4581-97d0-28fb9e6e35e2', 
-          'mercy': 'f2bc131c-436b-4581-97d0-28fb9e6e35e2', 
-          'faith': 'f2bc131c-436b-4581-97d0-28fb9e6e35e2', 
-          'vivian': 'f2bc131c-436b-4581-97d0-28fb9e6e35e2', 
-          'sally': 'f2bc131c-436b-4581-97d0-28fb9e6e35e2',
-          'dr. atieno': 'f2bc131c-436b-4581-97d0-28fb9e6e35e2',
-          'mercy father': 'd7c2b60e-185b-4447-902f-2283c4afa876',
-          'father': 'd7c2b60e-185b-4447-902f-2283c4afa876',
-          'john': 'd7c2b60e-185b-4447-902f-2283c4afa876',
-          'george': 'd7c2b60e-185b-4447-902f-2283c4afa876',
-          'peter': 'd7c2b60e-185b-4447-902f-2283c4afa876',
-          'james': 'd7c2b60e-185b-4447-902f-2283c4afa876',
-          'simon': 'd7c2b60e-185b-4447-902f-2283c4afa876',
-          'simon (inner)': 'd7c2b60e-185b-4447-902f-2283c4afa876'
+          'mercy (inner)': FEMALE_VOICE, 
+          'mercy': FEMALE_VOICE, 
+          'faith': FEMALE_VOICE, 
+          'vivian': FEMALE_VOICE, 
+          'sally': FEMALE_VOICE,
+          'adhiambo': FEMALE_VOICE,
+          'dr. atieno': FEMALE_VOICE,
+          'simon’s mum':FEMALE_VOICE,
+          'mercy father': MALE_VOICE,
+          'father': MALE_VOICE,
+          'john': MALE_VOICE,
+          'george': MALE_VOICE,
+          'peter': MALE_VOICE,
+          'james': MALE_VOICE,
+          'erick': MALE_VOICE,
+          'otis': MALE_VOICE,
+          'simon': MALE_VOICE,
+          'simon (inner)': MALE_VOICE
         }
 PROJECT_ID = '3efd4607-c137-4920-93f4-0bec86dfeabb'
 #Mercy act 1 8451fe01-9d06-4b96-aca2-22e6778ad90d
@@ -94,9 +100,9 @@ class Line:
 
 
 def login(username, password):
-    # Do a session.get here so that we get a csrf_cooke_name cookie
+    # Do a session.get here so that we get a csrf_cookie_name cookie
     SESSION.get("https://aivoov.com/signin")
-    headers = {
+    headers = {`
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
             'Accept-Encoding': 'gzip, deflate, br',
             "Cache-Control": 'max-age=0',
@@ -106,7 +112,7 @@ def login(username, password):
             "Origin": "https://aivoov.com",
             "Referer": "https://aivoov.com/signin",
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
-            }
+    }
     login_data = {"username": username, "password": password, "base_url": "https://aivoov.com", "csrf_test_name": [SESSION.cookies['csrf_cookie_name'], SESSION.cookies['csrf_cookie_name']]}
     response = SESSION.post('https://aivoov.com/authentication/signin_do/', headers=headers, data=login_data)
     if response.status_code >= 400:
@@ -114,6 +120,7 @@ def login(username, password):
 
 
 def create_audio_file(scene):
+    print(f"uploading scene {scene.name}")
 
     post_data = {
         'csrf_test_name': SESSION.cookies['csrf_cookie_name'],
@@ -198,7 +205,6 @@ def main():
         generate_ink_file(f.read())
     login(USERNAME, PASSWORD)
     for scene in act.scenes:
-        print(f"uploading scene {scene.name}")
         create_audio_file(scene)
 
 
