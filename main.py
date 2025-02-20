@@ -1,3 +1,6 @@
+import base64
+import os
+import pydub
 import requests
 
 FILE_NAME = '/home/nick/code/aivoov/simon_2.txt'
@@ -27,9 +30,8 @@ PROJECT_ID = '3efd4607-c137-4920-93f4-0bec86dfeabb'
 #Mercy act 1 8451fe01-9d06-4b96-aca2-22e6778ad90d
 #Mercy act 2 a12dbe3b-a24c-422d-a7ef-298fa56a92cb
 #Simon act 2 3efd4607-c137-4920-93f4-0bec86dfeabb
-USERNAME = ''
-PASSWORD = ''
-
+TOKEN = os.environ['TOKEN']
+VOICES = None
 SESSION = requests.Session()
 SCENE_NAMES = set()
 
@@ -60,6 +62,8 @@ class Act:
             elif raw_line.strip().startswith('VAR'):
                 pass
             elif raw_line.strip().startswith('['):
+                pass
+            elif raw_line.strip().startswith('#'):
                 pass
             elif raw_line.strip().startswith('{'):
                 pass
@@ -99,63 +103,46 @@ class Line:
         self.text = text
 
 
-def login(username, password):
-    # Do a session.get here so that we get a csrf_cookie_name cookie
-    SESSION.get("https://aivoov.com/signin")
-    headers = {`
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-            'Accept-Encoding': 'gzip, deflate, br',
-            "Cache-Control": 'max-age=0',
-            "Connection": "keep-alive",
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Host": "aivoov.com",
-            "Origin": "https://aivoov.com",
-            "Referer": "https://aivoov.com/signin",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
-    }
-    login_data = {"username": username, "password": password, "base_url": "https://aivoov.com", "csrf_test_name": [SESSION.cookies['csrf_cookie_name'], SESSION.cookies['csrf_cookie_name']]}
-    response = SESSION.post('https://aivoov.com/authentication/signin_do/', headers=headers, data=login_data)
-    if response.status_code >= 400:
-        raise Exception(response.text)
-
-
 def create_audio_file(scene):
-    print(f"uploading scene {scene.name}")
-
+    audio = None
     post_data = {
-        'csrf_test_name': SESSION.cookies['csrf_cookie_name'],
-        'transcribe_text_title': scene.name,
-        'projects': PROJECT_ID,
-        'transcribe_auto_save_id': '', 
-        'transcribe_text_used_value': '', 
-        'check_slug': '', 
-        'transcribe_type': 'text',
-        'auto_save': 1,
-        'synthesize_type': 'save',
-        'transcribe_text_input_position': '',
-        'project_hash_key': '',
-        'editor_v': 2,
-        'language_init': [],
-        'default_language_id[]': [],
-        'default_scheme': [],
-        'transcribe_filter_voice[]': [],
-        'transcribe_ssml_style[]': [],
-        'transcribe_ssml_volume[]': [],
-        'transcribe_ssml_spk_rate[]': [],
-        'transcribe_ssml_pitch_rate[]': [],
-        'transcribe_text[]': []
+        'model_id' :'eleven_multilingual_v2'
     }
-    for line in scene.lines:
-        post_data['language_init'].append('')
-        post_data['default_language_id[]'].append(PEOPLE_TO_VOICE_MAP[line.person])
-        post_data['default_scheme'].append('')
-        post_data['transcribe_filter_voice[]'].append('neural')
-        post_data['transcribe_ssml_style[]'].append('')
-        post_data['transcribe_ssml_spk_rate[]'].append('default')
-        post_data['transcribe_ssml_pitch_rate[]'].append('default')
-        post_data['transcribe_text[]'].append(f'<p>{line.text}</p>')
+    line_no = 0
+    audio_length = 0.0
+    silence = pydub.AudioSegment.silence(duration=250)
+    while line_no < len(scene.lines):
+        post_data['text'] = scene.lines[line_no].text
+        if line_no != 0:
+            post_data['previous_text'] = scene.lines[line_no-1].text
+        if line_no != len(scene.lines) - 1:
+            post_data['next_text'] = scene.lines[line_no+1].text
+        voice_id = get_voice_id(scene.lines[line_no].person.remove(' (inner)'))
+        response = SESSION.post(f'https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/with-timestamps?output_format=mp3_44100_128', data=post_data, headers={'xi-api-key': TOKEN})
+        response.raise_for_error()
     
-    response = SESSION.post('https://aivoov.com/transcribe/get_transcribe_beta/', data=post_data)
+        response_json = response.json()
+        if not audio:
+            audio = pydub.AudioSegment(data=bytes(base64.b64decode(response_json['audio_base64'])), frame_rate=44100)
+            audio_length = response_json["alignment"]["character_end_times_seconds"][-1] 
+            print(f'{scene.name},{scene.lines[line_no].person},0.00,{audio_length},{scene.lines[line_no].text.replace(",", "")}')
+        else:
+            audio = audio + silence + pydub.AudioSegment(data=bytes(base64.b64decode(response_json['audio_base64'])), frame_rate=44100)
+            length = response_json["alignment"]["character_end_times_seconds"][-1]
+            print(f'{scene.name},{scene.lines[line_no].person},{audio_length+.25},{audio_length+.25+length},{scene.lines[line_no].text.replace(",", "")}')
+            audio_length = audio_length + length + .25
+        line_no += 1
+    with open(f'{scene.name}.mp3', 'rwb') as f:
+        f.write(audio)
+
+
+def get_voice_id(name):
+    if not VOICES:
+        response = SESSION.get('https://api.elevenlabs.io/v1/voices', data=post_data, headers={'xi-api-key': TOKEN})
+        VOICES = response.json()
+    for voice in VOICES['voices']:
+        if voice['name'].lower() == name:
+            return voice['voice_id']
 
 
 def parse_text_file(raw_text):
@@ -203,8 +190,8 @@ def main():
         act = parse_text_file(f.read())
     with open(FILE_NAME, mode='r') as f:
         generate_ink_file(f.read())
-    login(USERNAME, PASSWORD)
     for scene in act.scenes:
+        print('scene_name,speaker,start_time,end_time,text')
         create_audio_file(scene)
 
 
