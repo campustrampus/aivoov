@@ -10,7 +10,7 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 AUDIO_DIR = f'{os.getcwd()}/audio'
 TIMESTAMP_DIR = f'{os.getcwd()}/timestamps'
-FILE_NAME = f'{os.getcwd()}/resources/christopher-1.txt'
+FILE_NAME = f'{os.getcwd()}/resources/debby-2.txt'
 MALE_VOICE = 'd7c2b60e-185b-4447-902f-2283c4afa876' 
 FEMALE_VOICE = 'f2bc131c-436b-4581-97d0-28fb9e6e35e2'
 VOICE_SETTINGS = {
@@ -72,247 +72,12 @@ VOICE_SETTINGS = {
           'thomas': {'speed': 1, 'stability': .30, 'similarity_boost': .40, 'style': .75, 'use_speaker_boost': True}, 
           'eddie': {'speed': 1, 'stability': .20, 'similarity_boost': .70, 'style': .80, 'use_speaker_boost': True}, 
         }
-PROJECT_ID = '3efd4607-c137-4920-93f4-0bec86dfeabb'
-#Mercy act 1 8451fe01-9d06-4b96-aca2-22e6778ad90d
-#Mercy act 2 a12dbe3b-a24c-422d-a7ef-298fa56a92cb
-#Simon act 2 3efd4607-c137-4920-93f4-0bec86dfeabb
-TOKEN = "" 
+TOKEN = ""
 VOICES = {}
 SESSION = requests.Session()
 SCENE_NAMES = set()
 
-debby_scenes_to_change = [
-    "D2_intro_glad",
-    "D2_intro_ashamed",
-    "D2_IntroMeds",
-    "D2_walkSam",
-    "D2_walknSam",
-    "D2_begging",
-    "D2_walk_excited",
-    "D2_walk_scared",
-    "D2_walk_questionmum",
-    "D2_walk_mp",
-    "D2_walk_us",
-    "D2_walk_ae",
-    "D2_walk_unk",
-    "D2_walk_wrap",
-    "D2_OTZ_distraction",
-    "D2_Maryam_comfort",
-    "D2_Maryam_quiet",
-    "D2_OTZ_attny",
-    "D2_OTZ_attnin",
-    "D2_OTZ_attnn",
-    "D2_OTZ2_phone",
-    "D2_OTZ2_help_Good",
-    "D2_OTZ2_help_Bad",
-    "D2_OTZ2_help_Unsure",
-    "D2_OTZ2_help_Next",
-    "D2_OTZ2_letter",
-    "D2_OTZ2_ftf",
-    "D2_OTZ3yes",
-    "D2_OTZ3oth",
-    "D2_OTZ3no",
-    "D2_OTZ4yes",
-    "D2_OTZ4no",
-    "D2_OTZ4b",
-    "D2_OTZ4_place_bad",
-    "D2_OTZ4_place_idk",
-    "D2_OTZ_Samhouse",
-    "D2_OTZ_school",
-    "D2_OTZ5_leave",
-    "D2_questioner_hurt",
-    "D2_questioner_smart",
-    "D2_questioner_idk",
-    "D2_quiet_care",
-    "D2_quiet_hear",
-    "D2_quiet_idk",
-    "D2_quiet_hurt",
-    "D2_quiet_uncomfy",
-    "D2_quiet_confused",
-    "D2_qtr_hurt2",
-    "D2_qtr_joint",
-    "D2_qtr_Simon",
-    "D2_qtr_frust2",
-    "D2_OTZ_Samquest",
-    "D2_OTZ_Samquiet",
-    "D2_OTZ_Samquick",
-    "D2_OTZwrap2",
-    "D2_help_mum_okay",
-    "D2_help_mum_relief",
-    "D2_help_Mercy",
-    "D2_letter_joint",
-    "D2_letter2",
-    "D2_letter_wait",
-    "D2_letter_relieved",
-    "D2_letter_ok",
-    "D2_letter_nervous",
-    "D2_letter4",
-    "D2_Samlet",
-    "D2_Samlet2_honest_good",
-    "D2_Samlet2_honest_frust",
-    "D2_Samlet2_honest_idk",
-    "D2_Samlet2_easy",
-    "D2_Samlet2_nerv",
-    "D2_Samlet2_understand",
-    "D2_letter_f2f",
-    "D2_disclosenext",
-    "D2_Samdd_excited",
-    "D2_Samdd_blurt",
-    "D2_Samdd_show_meds",
-    "D2_Samdd_show_aptcard",
-    "D2_Samdd_storyy",
-    "D2_Samdd_story2y",
-    "D2_Samdd_story3y",
-    "D2_Samdd_story4",
-    "D2_Samdd_HIVwait",
-    "D2_Sam_surprisedresp",
-    "D2_Samdd_tell_hurt",
-    "D2_Samdd_tell_mad",
-    "D2_Samdd_tell_idc",
-    "D2_Samdd_notell2",
-    "D2_Samdd_appreciate2",
-    "D2_Samdd_sad2",
-    "D2_Samdd_hurtbetter",
-    "D2_Samdd_hurtno",
-    "D2_Samdd_emotions",
-    "D2_Samad3",
-    "D2_Samad_relieved",
-    "D2_Samad_disappointed",
-    "D2_Samad_scared",
-    "D2_Samad_idk",
-    "D2_Samad_responseex",
-    "D2_Samad_responseq",
-    "D2_Samad_scared_reaction",
-    "D2_debrief_scared",
-    "D2_debrief_hopeful",
-    "D2_debrief_Mercy",
-    "D2_debrief_Mercy_relieved",
-    "D2_debrief_Mercywrap",
-    "D2_debrief_Mercy_scared",
-    "D2_debrief_Mercy_hopeful",
-    "D2_debrief_Chris",
-    "D2_debrief_Chris_relieved",
-    "D2_debrief_Chriswrap",
-    "D2_debrief_Chris_scared",
-    "D2_debrief_Chris_hopeful",
-    "D2_debrief_Mum_relieved",
-    "D2_debrief_Mumwrap",
-    "D2_debrief_Mum_scared",
-    "D2_debrief_Mum_hopeful",
-    "D2_Sam_call",
-    "D2_Sam_rschglad",
-    "D2_Sam_rschconf",
-    "D2_Sam_rschworr",
-    "D2_Sam_wait",
-    "D2_Sam2_qs",
-    "D2_Sam2_qs2",
-    "D2_Sam2_nqs_info",
-    "D2_Sam2_nqs_feels",
-    "D2_Sam2_nqs2",
-    "D2_Sam3_meds",
-    "D2_Sam3_apts",
-    "D2_Sam_suppd",
-    "D2_Sam_happy",
-    "D2_Sam_proud",
-    "D2_Sam4_Akinyi",
-    "D2_drive_strange",
-    "D2_drive_nothing",
-    "D2_Annaconvo_cont",
-    "D2_predoc_lie",
-    "D2_predoc_relieved",
-    "D2_predoc_tired",
-    "D2_doc",
-    "D2_doc_badad",
-    "D2_doc_lietruth",
-    "D2_doc_lie4",
-    "D2_doc_truth",
-    "D2_gameplan_opt",
-    "D2_gameplan_nerv",
-    "D2_gameplan_frust",
-    "D2_dr_excited",
-    "D2_dr_nervous",
-    "D2_dr_sad",
-    "D2_doc_goodad2",
-    "D2_doc2",
-    "D2_doc3_Worried",
-    "D2_doc3_opt",
-    "D2_doc3_frust",
-    "D2_doc3_EAC",
-    "D2_end_EAC",
-    "D2_vacay",
-    "D2_vacay_book",
-    "D2_vacay_friends2",
-    "D2_vacay_friends3",
-    "D2_vacay_run",
-    "D2_vacay_Brian",
-    "D2_vacay_Brian2",
-    "D2_vacay_Brian4",
-    "D2_vacay_lowadhere_disapp",
-    "D2_vacay_lowadhere_fine",
-    "D2_vacay_lowadhere_idk",
-    "D2_vacay_modadhere_asham",
-    "D2_vacay_modadhere_frust",
-    "D2_vacay_modadhere_okay",
-    "D2_vacay_goodadhere_surp",
-    "D2_vacay_goodadhere_frust",
-    "D2_vacay_goodadhere_okay",
-    "D2_vacay_drugsnow",
-    "D2_vacay_drugslater",
-    "D2_vacay_all_poor",
-    "D2_vacay_all_merge",
-    "D2_vacay_all_mod",
-    "D2_vacay_all_good",
-    "D2_vacay_break_poor",
-    "D2_vacay_break_mod",
-    "D2_vacay_break_good",
-    "D2_vacay_panic_meds",
-    "D2_vacay_shift0",
-    "D2_vacay_shift1",
-    "D2_vacay_shift2",
-    "D2_vacay_panic_distract",
-    "D2_vacay_panic3n",
-    "D2_post_worried",
-    "D2_post_upset",
-    "D2_post_fine",
-    "D2_postnone_remember",
-    "D2_post_worried1",
-    "D2_post_disappointed",
-    "D2_post_embarrassed",
-    "D2_postnone_daily1",
-    "D2_postnone_remember1",
-    "D2_post_worried2",
-    "D2_post_disappointed2",
-    "D2_post_embarrassed2",
-    "D2_postnone_daily2",
-    "D2_postnone_remember2",
-    "D2_Onyango_accept",
-    "D2_Onyango_accept2",
-    "D2_Onyango_excuse",
-    "D2_walk_Chris",
-    "D2_ride",
-    "D2_ride2",
-    "D2_ride3_flattered",
-    "D2_ride3_nervous",
-    "D2_postride_indirect",
-    "D2_postride_direct",
-    "D2_wrapy",
-    "D2_wrapn",
-    "D2_Bridge_Akinyi_B",
-    "D2_Bridge_AdherenceA",
-    "D2_Bridge_AdherenceB",
-    "D2_Bridge_AdherenceC",
-    "D2_Bridge_AdherenceD",
-    "D2_Bridge_AdherenceE",
-    "D2_Bridge_AdherenceF",
-    "D2_Bridge_AdherenceG",
-    "D2_Bridge_AdherenceH",
-    "D2_Bridge_AdherenceI",
-    "D2_Bridge_AdherenceJ",
-    "D2_Bridge_AdherenceL",
-    "D2_Bridge_AdherenceN",
-    "D2_Bridge_SponsorA",
-    "D2_Bridge_SponsorB",
-    "D2_Bridge_SponsorC"
+scenes_to_run_audio = [
 ]
 class Act:
     def __init__(self, data):
@@ -345,8 +110,8 @@ class Act:
                     current_scene.lines.append(line)
                     if raw_line.strip().startswith('+ ['):
                         current_scene.has_choice_bug = True
-                    if current_speaker == 'george': 
-                        current_scene.has_george = True
+                    if current_scene.name in scenes_to_run_audio:
+                        current_scene.rerun_audio = True
                 elif raw_line.strip().upper().startswith('#FADE_IN'):
                     current_scene.has_fade_in = True
                 elif raw_line.strip().upper().startswith('#FADE_OUT'):
@@ -460,7 +225,9 @@ class Act:
         pool.join()
 
 def run_generate_audio(scene):
-    scene.generate_audio()
+    if scene.rerun_audio:
+        print(f'rerunning {scene.name}')
+        scene.generate_audio()
 
 class Scene:
     def __init__(self, name, lines, has_choice=False):
@@ -471,7 +238,7 @@ class Scene:
         self.has_fade_out = False
         self.has_choice = has_choice
         self.has_choice_bug = False
-        self.has_george = False
+        self.rerun_audio = False
 
     def generate_audio(self):
         audio = None
@@ -483,23 +250,24 @@ class Scene:
             audio = pydub.AudioSegment.silent(duration=1750, frame_rate=22050)
         while line_no < len(self.lines):
             post_data = {
-                'voice_settings': get_voice_settings(),
+                'voice_settings': get_voice_settings(self.lines[line_no].person.replace(' (inner)', '')),
                 'text': self.lines[line_no].text.replace('OTZ', 'OT Zed')
             }
-            voice_id = get_voice_id(self.lines[line_no].person.remove(' (inner)'))
-            response = SESSION.post(f'https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/with-timestamps?output_format=mp3_22050_32', data=post_data, headers={'xi-api-key': TOKEN})
-            response.raise_for_error()
+            voice_id = get_voice_id(self.lines[line_no].person.replace(' (inner)', ''))
+            response = SESSION.post(f'https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/with-timestamps?output_format=mp3_22050_32', json=post_data, headers={'xi-api-key': TOKEN})
+            response.raise_for_status()
             response_json = response.json()
             start_time = None
             end_time = None
+            audio_bytes = io.BytesIO(base64.b64decode(response_json['audio_base64']))
             if not audio:
-                audio = pydub.AudioSegment(data=bytes(base64.b64decode(response_json['audio_base64'])), frame_rate=22050)
+                audio = pydub.AudioSegment.from_file_using_temporary_files(file=audio_bytes, format='mp3')
                 start_time = 0
                 end_time = len(audio)
             else:
                 audio = audio + silence
                 start_time = len(audio) 
-                audio = audio + + pydub.AudioSegment(data=bytes(base64.b64decode(response_json['audio_base64'])), frame_rate=22050)
+                audio = audio + pydub.AudioSegment.from_file_using_temporary_files(file=audio_bytes, format='mp3')
                 end_time = len(audio) 
             buffer.write(f'{self.name},{self.lines[line_no].person},{start_time},{end_time},{self.lines[line_no].text.replace(",", "")}\n')
             self.lines[line_no].start_time = start_time
@@ -508,7 +276,7 @@ class Scene:
         audio = pydub.effects.compress_dynamic_range(audio)
         audio.export(f'{AUDIO_DIR}/original/{self.name}.mp3', format='mp3', tags={'track': '1', 'title':self.name})
         audio = audio.set_frame_rate(11025)
-        audio.export(f'{AUDIO_DIR}/lowered_bit_rate/{self.name}.mp3', format='mp3', frame_rate=11025, bitrate='16k', tags={'track': '1', 'title':self.name})
+        audio.export(f'{AUDIO_DIR}/lowered_bit_rate/{self.name}.mp3', format='mp3', bitrate='16k', tags={'track': '1', 'title':self.name})
         with open(f'{TIMESTAMP_DIR}/{self.name}.csv', 'w') as f:
             buffer.seek(0)
             f.write(buffer.read())
@@ -573,8 +341,9 @@ def get_voice_settings(name):
     return VOICE_SETTINGS[name]
 
 def get_voice_id(name):
+    global VOICES
     if not VOICES:
-        response = SESSION.get('https://api.elevenlabs.io/v1/voices', data=post_data, headers={'xi-api-key': TOKEN})
+        response = SESSION.get('https://api.elevenlabs.io/v1/voices', headers={'xi-api-key': TOKEN})
         VOICES = response.json()
     for voice in VOICES['voices']:
         if voice['name'].lower() == name and voice['category'].lower() == 'cloned':
@@ -647,7 +416,7 @@ def main():
     #convert_audio()
     with open(FILE_NAME, mode='r') as f:
         act = parse_text_file(f.read())
-    #act.generate_audio()
+    act.generate_audio()
     act.load_audio_timestamps()
     act.generate_ink_file()
     #rerun_debby_scenes()
