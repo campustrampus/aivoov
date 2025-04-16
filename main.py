@@ -72,7 +72,7 @@ VOICE_SETTINGS = {
           'thomas': {'speed': 1, 'stability': .30, 'similarity_boost': .40, 'style': .75, 'use_speaker_boost': True}, 
           'eddie': {'speed': 1, 'stability': .20, 'similarity_boost': .70, 'style': .80, 'use_speaker_boost': True}, 
         }
-TOKEN = ""
+TOKEN = "" 
 VOICES = {}
 SESSION = requests.Session()
 SCENE_NAMES = set()
@@ -151,7 +151,7 @@ class Act:
                                 print(f"ERROR, found dialogue after choice in {scene.name}")
                                 pass
                             else:
-                                if current_time -1:
+                                if current_time == -1:
                                     f.write('#TIME 0\n')
                                 if scene.lines[current_dialogue_line].start_time > 0 and current_dialogue_line == 0:
                                     buffer.seek(0)
@@ -266,9 +266,9 @@ class Scene:
                 end_time = len(audio)
             else:
                 audio = audio + silence
-                start_time = len(audio) 
+                start_time = audio.duration_seconds
                 audio = audio + pydub.AudioSegment.from_file_using_temporary_files(file=audio_bytes, format='mp3')
-                end_time = len(audio) 
+                end_time = audio.duration_seconds
             buffer.write(f'{self.name},{self.lines[line_no].person},{start_time},{end_time},{self.lines[line_no].text.replace(",", "")}\n')
             self.lines[line_no].start_time = start_time
             self.lines[line_no].end_time = end_time
@@ -319,9 +319,9 @@ class Scene:
                 end_time = len(rebuilt_audio)
             else:
                 rebuilt_audio = rebuilt_audio + silence
-                start_time = len(rebuilt_audio)
+                start_time = rebuilt_audio.duration_seconds
                 rebuilt_audio = rebuilt_audio + split_audio[line_index]
-                end_time = len(rebuilt_audio)
+                end_time = rebuilt_audio.duration_seconds
             self.lines[line_index].start_time = start_time
             self.lines[line_index].end_time = end_time
         rebuilt_audio.export(f'{AUDIO_DIR}/new_audio/{self.name}.mp3', format='mp3', bitrate='16k', tags={'track': '1', 'title':self.name})
@@ -371,6 +371,8 @@ def parse_dialogue_line(raw_line, current_speaker):
     elif raw_line.strip().startswith('+['):
         speaker = current_speaker
         dialogue = raw_line.strip().split('+[')[1].split(']')[0].strip()
+    if speaker not in VOICE_SETTINGS:
+        print(f'Speaker {speaker} not found in voice settings')
     return Line(person=speaker, text=dialogue)
         
 
@@ -412,15 +414,15 @@ def rerun_debby_scenes():
             act.pre_scene_lines = []
             act.generate_ink_file()
 
+
 def main():
     #convert_audio()
     with open(FILE_NAME, mode='r') as f:
         act = parse_text_file(f.read())
-    act.generate_audio()
+    #act.generate_audio()
     act.load_audio_timestamps()
     act.generate_ink_file()
     #rerun_debby_scenes()
-
 
 
 if __name__ == '__main__':
